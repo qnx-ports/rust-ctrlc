@@ -78,14 +78,14 @@ pub unsafe fn init_os_handler(overwrite: bool) -> Result<(), Error> {
     implementation::sem_init();
 
     let handler = signal::SigHandler::Handler(os_handler);
-    #[cfg(not(target_os = "nto"))]
+    #[cfg(not(any(target_os = "nto", target_os = "qnx")))]
     let new_action = signal::SigAction::new(
         handler,
         signal::SaFlags::SA_RESTART,
         signal::SigSet::empty(),
     );
     // SA_RESTART is not supported on QNX Neutrino 7.1 and before
-    #[cfg(target_os = "nto")]
+    #[cfg(any(target_os = "nto", target_os = "qnx"))]
     let new_action =
         signal::SigAction::new(handler, signal::SaFlags::empty(), signal::SigSet::empty());
 
